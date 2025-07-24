@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modern Admin Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      background: radial-gradient( #010d22, #031125), #000000;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .login-box {
+      background-color: rgba(64, 88, 104, 0.295);
+      backdrop-filter: blur(14px);
+      padding: 2rem;
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(70, 70, 70, 0.7);
+      z-index: 10;
+      width: 100%;
+      max-width: 700px;
+      border: 1px solid rgba(255, 255, 255, 0.452);
+    }
+
+    .vattara-logo-img {
+      display: block;
+      margin: 0 auto 1rem auto;
+      max-width: 180px;
+      height: auto;
+      filter: drop-shadow(0 0 8px rgba(83, 83, 83, 0.048));
+    }
+
+    .login-box h2 {
+      text-align: center;
+      color: rgb(235, 230, 230);
+      margin-bottom: 1.5rem;
+      font-size: 2.6rem;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 1.2rem;
+    }
+
+    .input-group i {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: 1rem;
+    }
+
+    .input-group input {
+      width: 92%;
+      padding: 14px 14px 14px 40px;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 11px;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .login-box a {
+      display: block;
+      text-align: left;
+      color: #aaa;
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-top: 4px;
+      margin-bottom: 16px;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      gap: 18px;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      padding: 12px;
+      background: rgba(3, 18, 37, 0.336);
+      border: 1px solid rgba(255, 255, 255, 0.349);
+      color: rgb(255, 255, 255);
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .action-buttons button.selected {
+      background: white;
+      color: black;
+      transform: scale(1.05);
+    }
+
+    .action-buttons button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(2, 22, 39, 0.349), transparent);
+      transition: left 0.4s ease;
+      z-index: 0;
+    }
+
+    .action-buttons button:hover::before {
+      left: 100%;
+    }
+
+    .action-buttons button:hover {
+      color: black;
+      background: white;
+      transform: scale(1.08);
+      box-shadow: 0 0 15px #ffffff33;
+    }
+
+    #signInBtn {
+      width: 100%;
+      padding: 14px;
+      background: rgba(3, 18, 37, 0.336);
+      border: 1px solid rgba(255, 255, 255, 0.349);
+      color: rgb(255, 255, 255);
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.4s ease;
+      margin-top: 1.5rem;
+      font-size: 1rem;
+    }
+
+    #signInBtn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(#124a6d, #031931);
+      box-shadow: 0 0 5px #fdfdfd86;
+    }
+
+    #error-msg {
+      color: #ff7272;
+      text-align: center;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .icon-stroke {
+      position: absolute;
+      font-size: 58px;
+      color: transparent;
+      -webkit-text-stroke: 1.2px white;
+      text-shadow: 0 0 5px rgba(255,255,255,0.15);
+      opacity: 0.9;
+      animation: flowToFooter 3s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes flowToFooter {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(calc(100vh - 100px));
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <img src="logo.png" alt="Vattara Logo" class="vattara-logo-img" />
+    <h2>Welcome Back !</h2>
+
+    <div class="input-group">
+      <i class="fa fa-user"></i>
+      <input type="text" placeholder="Username" id="username" />
+    </div>
+
+    <div class="input-group">
+      <i class="fa fa-lock"></i>
+      <input type="password" placeholder="Password" id="password" />
+    </div>
+
+    <a href="#">Forgot password?</a>
+
+    <div class="action-buttons">
+      <button type="button" class="select-btn" data-role="realestate">Real Estate</button>
+      <button type="button" class="select-btn" data-role="services">Services</button>
+    </div>
+
+    <button id="signInBtn">Sign in</button>
+    <div id="error-msg"></div>
+  </div>
+
+  <script>
+    let lastX = 0, lastY = 0, lastTime = Date.now();
+    let selectedRole = "";
+
+    document.addEventListener("mousemove", (e) => {
+      const insideLoginBox = e.target.closest('.login-box');
+      if (insideLoginBox) return;
+
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const now = Date.now();
+
+      if (dist > 40 && now - lastTime > 200) {
+        const icon = document.createElement("i");
+        const isService = Math.random() < 0.1;
+        icon.className = `fa-solid ${isService ? 'fa-gear' : 'fa-house'} icon-stroke`;
+        icon.style.left = `${e.clientX}px`;
+        icon.style.top = `${e.clientY}px`;
+        document.body.appendChild(icon);
+
+        lastTime = now;
+        lastX = e.clientX;
+        lastY = e.clientY;
+      }
+    });
+
+    document.querySelectorAll(".select-btn").forEach(btn => {
+      btn.addEventListener("click", function () {
+        document.querySelectorAll(".select-btn").forEach(b => b.classList.remove("selected"));
+        this.classList.add("selected");
+        selectedRole = this.dataset.role;
+      });
+    });
+
+    document.getElementById("signInBtn").addEventListener("click", function () {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMsg = document.getElementById("error-msg");
+
+      if (username !== "Vattara" || password !== "Vattara@123") {
+        errorMsg.textContent = "Invalid username or password!";
+        errorMsg.style.display = "block";
+      } else if (!selectedRole) {
+        errorMsg.textContent = "Please select either Real Estate or Services.";
+        errorMsg.style.display = "block";
+      } else {
+        errorMsg.style.display = "none";
+        window.location.href = "index.html"; // replace with actual redirect page
+      }
+    });
+  </script>
+</body>
+</html>

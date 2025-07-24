@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vattara Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Vattara</h2>
+    <div class="nav-item active">🏠 Dashboard</div>
+    <div class="nav-item" onclick="window.location.href='employee-management.html'">👤 Employee Management</div>
+    <div class="nav-item">🏢 Property Management</div>
+    <div class="nav-item">📁 Customer Directory</div>
+    <div class="nav-item">🖼️ Display Management</div>
+    <div class="nav-item">💳 Subscription</div>
+    <div class="nav-item">🗑️ Recycle Bin</div>
+    <div class="nav-item">🚪 Log Out</div>
+  </div>
+
+  <div class="main-content">
+    <!-- Top Navigation Bar (Dark) -->
+    <div class="top-header">
+      <div class="top-nav">
+        <button class="active" data-tab="today">Today</button>
+        <button data-tab="weekly">Weekly</button>
+        <button data-tab="monthly">Monthly</button>
+        <button data-tab="yearly">Yearly</button>
+        <button data-tab="custom">Custom</button>
+      </div>
+      <div class="top-actions">
+        <button class="services-btn">Services</button>
+        <img src="notification.png" alt="Notifications" class="top-icon-img" />
+        <img src="woman.png" alt="User Profile" class="top-icon-img" />
+
+      </div>
+    </div>
+
+    <!-- Custom Date Picker -->
+    <div id="custom-date-picker" style="display:none; margin: 1rem 0;">
+      <label>From <input type="text" id="fromDate" readonly></label>
+      <label>To <input type="text" id="toDate" readonly disabled></label>
+    </div>
+    
+
+    <!-- Info Cards -->
+    <div class="dashboard-section">
+      <div class="info-card card-blue border-right" data-toggle>
+        <div class="" onclick="window.location.href='employee-management.html'"><h3>Employee</h3></div>
+        
+        
+        <div class="card-details">
+          <p><span>Active:</span> 24</p>
+          <p><span>Inactive:</span> 5</p>
+          <button class="view-btn">View Full Details</button>
+        </div>
+      </div>
+
+      <div class="info-card card-purple border-right" data-toggle>
+        <h3>Help Request</h3>
+        <div class="card-details">
+          <p><span>Pending:</span> 8</p>
+          <p><span>Resolved:</span> 15</p>
+          <button class="view-btn">View Full Details</button>
+        </div>
+      </div>
+
+      <div class="info-card card-orange border-right" data-toggle>
+        <h3>Report</h3>
+        <div class="card-details">
+          <p><span>Pending:</span> 2</p>
+          <p><span>Reviewed:</span> 4</p>
+          <button class="view-btn">View Full Details</button>
+        </div>
+      </div>
+
+      <div class="info-card card-green border-right" data-toggle>
+        <h3>Upcoming Projects</h3>
+        <div class="card-details">
+          <p><span>Verified:</span> 10</p>
+          <p><span>Pending:</span> 4</p>
+          <button class="view-btn">View Full Details</button>
+        </div>
+      </div>
+
+      <div class="info-card card-red border-right" data-toggle>
+        <h3>Chatbot Request</h3>
+        <div class="card-details">
+          <p><span>Verified:</span> 6</p>
+          <p><span>Pending:</span> 2</p>
+          <button class="view-btn">View Full Details</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post Property Summary -->
+    <h3 class="section-title">Post Property</h3>
+    <div class="group-card">
+      <div class="mini-box bg-blue">Total <strong>120</strong></div>
+      <div class="mini-box bg-purple">Approved <strong>90</strong></div>
+      <div class="mini-box bg-peach">Pending <strong>10</strong></div>
+      <div class="mini-box bg-red">Rejected <strong>9</strong></div>
+      <div class="mini-box bg-lightblue">Sold out <strong>224</strong></div>
+    </div>
+
+    <!-- Graph Section -->
+    <div class="cities-graph">
+      <div class="cities">
+        <div class="chart-header">
+          <h3>Cities</h3>
+          <select id="sortSelector">
+            <option value="" hidden selected>Sort by</option>
+            <option value="asc">Sort by Lower</option>
+            <option value="desc">Sort by Higher</option>
+          </select>
+        </div>
+        <canvas id="citiesBarChart"></canvas>
+        <div class="pagination-controls">
+          <button id="prevPage">Previous</button>
+          <span id="pageIndicator">Page 1</span>
+          <button id="nextPage">Next</button>
+        </div>
+      </div>
+
+      <div class="graph">
+        <div class="graph-tabs">
+          <div class="active">User Count</div>
+          <div>Post Count</div>
+        </div>
+        <canvas id="userChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

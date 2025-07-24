@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee Management</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --sidebar-bg: #1c1f2e;
+      --header-bg: #0f1120;
+      --light-bg: #f1f4f9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      background-color: var(--light-bg);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .sidebar {
+      width: 15rem;
+      background-color: var(--sidebar-bg);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 1001;
+      padding-top: 1rem;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-item {
+      padding: 0.9rem 1.25rem;
+      cursor: pointer;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background-color: #2179d8;
+    }
+
+    .top-header {
+      position: fixed;
+      top: 0;
+      left: 15rem;
+      right: 0;
+      height: 55px;
+      background-color: var(--header-bg);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      z-index: 1000;
+    }
+
+    .top-nav {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .top-nav button {
+      background: none;
+      border: none;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0.5rem;
+      position: relative;
+    }
+
+    .top-nav button.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: white;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .services-btn {
+      padding: 0.5rem 1.2rem;
+      border-radius: 999px;
+      border: 1px solid white;
+      background: none;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .main-content {
+      margin-left: 15rem;
+      margin-top: 55px;
+      padding: 1rem 2rem;
+      width: calc(100% - 15rem);
+      background-color: #f1f4f9;
+      min-height: calc(100vh - 55px);
+    }
+
+    .emp-top-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .emp-top-controls input[type="text"],
+    .emp-top-controls select {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+    }
+
+    .emp-top-controls button {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 14px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      font-weight: 600;
+    }
+
+    .tab-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .employee-count {
+      font-size: 13px;
+      color: #444;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .emp-tabs {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .emp-tabs button {
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      border: none;
+      background: #e0e7f0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .emp-tabs button.active {
+      background: #344b75;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .download-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .download-buttons button {
+      background: #344b75;
+      border: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .download-buttons svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .employee-table,
+    .role-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 40px;
+    }
+
+    .employee-table thead {
+      border-top: 7px solid #cdd5e0;
+    }
+
+    .employee-table th,
+    .employee-table td,
+    .role-table th,
+    .role-table td {
+      padding: 0.75rem 1rem;
+      font-size: 13.5px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .employee-table th,
+    .role-table th {
+      background-color: #eef2f9;
+      color: #333;
+      font-weight: 600;
+      border-bottom: 3px solid #dbe2ea;
+    }
+
+    .employee-table td,
+    .role-table td {
+      border-bottom: 1px solid #e1e1e1;
+      background-color: #fff;
+    }
+
+    .status-dot {
+      height: 10px;
+      width: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    #roleTableContainer {
+      display: none;
+    }
+
+    .hide {
+      display: none !important;
+    }
+    .overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  display: none;
+  z-index: 999;
+}
+
+.modal {
+  position: fixed;
+  top: 55px; /* right below the header */
+  right: -100%;
+  width: 400px;
+  height: calc(100vh - 55px);
+  background: white;
+  padding: 2rem;
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: right 0.4s ease;
+  overflow-y: auto;
+}
+
+.modal.active {
+  right: 0;
+}
+
+.modal h3 {
+  margin-bottom: 1rem;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal input,
+.modal select {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.modal .button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+#submitBtn {
+  background: var(--primary-color);
+  color: white;
+}
+
+#cancelBtn {
+  background: #ccc;
+  color: #333;
+}
+
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Vattara</h2>
+    <div class="nav-item">🏠 Dashboard</div>
+    <div class="nav-item active">👤 Employee Management</div>
+    <div class="nav-item">🏢 Property Management</div>
+    <div class="nav-item">📁 Customer Directory</div>
+    <div class="nav-item">🖼️ Display Management</div>
+    <div class="nav-item">💳 Subscription</div>
+    <div class="nav-item">🗑️ Recycle Bin</div>
+    <div class="nav-item">🚪 Log Out</div>
+  </div>
+
+  <div class="top-header">
+    <div class="top-nav">
+      <button class="active">Today</button>
+      <button>Weekly</button>
+      <button>Monthly</button>
+      <button>Yearly</button>
+      <button>Custom</button>
+    </div>
+    <div class="header-right">
+      <button class="services-btn">Services</button>
+      <span class="icon">🔔</span>
+      <span class="icon">👤</span>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="emp-top-controls">
+      <input type="text" id="searchInput" placeholder="Search by Emp id, Name">
+      <button id="addBtn">Add Employee</button>
+      <select id="roleFilter">
+        <option value="" hidden selected>Role</option>
+        <option value="System Engineer">System Engineer</option>
+        <option value="System Analyst">System Analyst</option>
+      </select>
+      <select id="statusFilter">
+        <option value="" hidden selected>Status</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+      </select>
+    </div>
+    <div class="overlay" id="overlay"></div>
+  <div class="modal" id="employeeModal">
+    <h3>Add New Employee</h3>
+    <input type="text" placeholder="Name">
+    <input type="text" placeholder="Mobile Number">
+    <input type="email" placeholder="Email ID">
+    <input type="date" placeholder="Joining Date">
+    <select>
+      <option value="">Select Role</option>
+      <option>System Engineer</option>
+      <option>System Analyst</option>
+      <option>System Admin</option>
+      <option>Telecalling</option>
+      <option>Others</option>
+    </select>
+  <div class="button-group">
+    <button id="cancelBtn">Cancel</button>
+    <button id="submitBtn">Submit</button>
+  </div>
+</div>
+
+
+ 
+    <div class="tab-wrapper">
+      <div>
+        <p class="employee-count">Employees Listed</p>
+        <div class="emp-tabs">
+          <button class="active" id="empTab">Employee Management</button>
+          <button id="roleTab">Role Management</button>
+        </div>
+      </div>
+      <div class="download-buttons">
+        <button id="resetBtn" title="Reset">
+          <svg viewBox="0 0 24 24"><path d="M12 6V3L8 7l4 4V8c2.76 0 5 2.24 5 5a5 5 0 1 1-10 0H5c0 3.87 3.13 7 7 7s7-3.13 7-7-3.13-7-7-7z"/></svg>
+        </button>
+        <button id="downloadBtn" title="Download">
+          <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.84v4h6.66V9h3.84L12 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <table class="employee-table" id="employeeTable">
+      <thead>
+        <tr>
+          <th><input type="checkbox" /></th>
+          <th>S.No</th>
+          <th>Emp ID</th>
+          <th>Name</th>
+          <th>Mobile Number</th>
+          <th>Email Address</th>
+          <th>Joining Date</th>
+          <th>Role</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="employee-table-body"></tbody>
+    </table>
+
+    <!-- Wrapped Role Table -->
+    <div id="roleTableContainer">
+      <table class="role-table">
+        <thead>
+          <tr>
+            <th>Permissions</th>
+            <th>View</th>
+            <th>Edit</th>
+            <th>Create</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="permissionRow">
+            <td class="role-label">Employee Management</td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+          </tr>
+          <tr id="permissionRow">
+            <td class="role-label">Property Management</td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+          </tr>
+          <tr id="permissionRow">
+            <td class="role-label">Display Management</td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+          </tr>
+          <tr id="permissionRow">
+            <td class="role-label">Customer Directory</td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+          </tr>
+          <tr id="controlRow" style="display: none;">
+            <td colspan="5" style="text-align: right; padding: 10px;">
+              <button id="saveBtn" style="padding:6px 12px; background:green; color:white; border:none; border-radius:6px; margin-right:6px;">Save</button>
+              <button id="cancelBtn" style="padding:6px 12px; background:red; color:white; border:none; border-radius:6px;">Cancel</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+<script>
+const submitBtn = document.getElementById('submitBtn');
+
+submitBtn.addEventListener('click', () => {
+  const name = document.getElementById('empName').value.trim();
+  const mobile = document.getElementById('empMobile').value.trim();
+  const email = document.getElementById('empEmail').value.trim();
+  const joiningDate = document.getElementById('empJoinDate').value;
+  const role = document.getElementById('empRole').value;
+
+  if (!name || !mobile || !email || !joiningDate || !role) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const newId = employees.length ? employees[employees.length - 1].id + 1 : 1234576;
+
+  const newEmployee = {
+    id: newId,
+    name,
+    mobile,
+    email,
+    joiningDate,
+    role,
+    status: "Active" // default if status is removed
+  };
+
+  employees.push(newEmployee);
+  renderTable(employees);
+
+  alert(`New employee created with Emp ID: ${newId}`);
+
+  // Reset fields
+  document.getElementById('empName').value = '';
+  document.getElementById('empMobile').value = '';
+  document.getElementById('empEmail').value = '';
+  document.getElementById('empJoinDate').value = '';
+  document.getElementById('empRole').value = '';
+
+  closeModal();
+});
+  
+// Handle modal open/close
+const addBtn = document.getElementById('addBtn');
+const modal = document.getElementById('employeeModal');
+const overlay = document.getElementById('overlay');
+const cancelBtn = document.getElementById('cancelBtn');
+
+function openModal() {
+  overlay.style.display = 'block';
+  modal.classList.add('active');
+}
+
+function closeModal() {
+  overlay.style.display = 'none';
+  modal.classList.remove('active');
+}
+
+addBtn.addEventListener('click', openModal);
+cancelBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', closeModal);
+
+// Role permissions logic
+const roleSelect = document.getElementById("roleFilter");
+const permissionRow = document.getElementById("permissionRow");
+const checkboxes = permissionRow.querySelectorAll("input[type='checkbox']");
+const controlRow = document.getElementById("controlRow");
+const saveBtn = document.getElementById("saveBtn");
+const cancelBtn2 = document.getElementById("cancelBtn");
+
+const rolePermissions = {
+  "System Engineer": { View: false, Edit: true, Create: false, Delete: true },
+  "System Analyst": { View: true, Edit: true, Create: false, Delete: false },
+};
+
+let currentRole = "";
+let originalPermissions = {};
+
+roleSelect.addEventListener("change", (e) => {
+  const selectedRole = e.target.value;
+  if (!selectedRole || !rolePermissions[selectedRole]) return;
+
+  currentRole = selectedRole;
+  const perms = rolePermissions[selectedRole];
+  originalPermissions = { ...perms };
+  const permKeys = Object.keys(perms);
+
+  checkboxes.forEach((cb, i) => {
+    cb.checked = perms[permKeys[i]];
+  });
+
+  controlRow.style.display = "none";
+});
+
+function checkForChanges() {
+  const permKeys = Object.keys(originalPermissions);
+  let changed = false;
+
+  checkboxes.forEach((cb, i) => {
+    if (cb.checked !== originalPermissions[permKeys[i]]) {
+      changed = true;
+    }
+  });
+
+  controlRow.style.display = changed ? "table-row" : "none";
+}
+
+checkboxes.forEach(cb => cb.addEventListener("change", checkForChanges));
+
+saveBtn.addEventListener("click", () => {
+  const permKeys = Object.keys(originalPermissions);
+  const newPerms = {};
+  checkboxes.forEach((cb, i) => {
+    newPerms[permKeys[i]] = cb.checked;
+  });
+  rolePermissions[currentRole] = newPerms;
+  originalPermissions = { ...newPerms };
+  controlRow.style.display = "none";
+  alert("Permissions saved successfully.");
+});
+
+cancelBtn2.addEventListener("click", () => {
+  const permKeys = Object.keys(originalPermissions);
+  checkboxes.forEach((cb, i) => {
+    cb.checked = originalPermissions[permKeys[i]];
+  });
+  controlRow.style.display = "none";
+});
+
+// Employee table filtering and download
+const employees = Array.from({ length: 20 }, (_, i) => ({
+  id: 1234576 + i,
+  name: i % 2 === 0 ? 'Bruno Bruno' : 'Vicky',
+  mobile: '9876543210',
+  email: 'bruno@gmail.com',
+  joiningDate: '28-05-2025',
+  role: i % 2 === 0 ? 'System Engineer' : 'System Analyst',
+  status: i % 2 === 0 ? 'Active' : 'Inactive'
+}));
+
+const tbody = document.getElementById("employee-table-body");
+const searchInput = document.getElementById("searchInput");
+const statusFilter = document.getElementById("statusFilter");
+const empTab = document.getElementById("empTab");
+const roleTab = document.getElementById("roleTab");
+const employeeTable = document.getElementById("employeeTable");
+const roleTableContainer = document.getElementById("roleTableContainer");
+
+function renderTable(data) {
+  tbody.innerHTML = "";
+  data.forEach((emp, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><input type="checkbox" /></td>
+      <td>${index + 1}.</td>
+      <td>${emp.id}</td>
+      <td>${emp.name}</td>
+      <td>${emp.mobile}</td>
+      <td>${emp.email}</td>
+      <td>${emp.joiningDate}</td>
+      <td>${emp.role}</td>
+      <td><span class="status-dot" style="background:${emp.status === 'Active' ? 'green' : 'red'};"></span>${emp.status}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function applyFilters() {
+  const search = searchInput.value.toLowerCase();
+  const role = roleSelect.value;
+  const status = statusFilter.value;
+
+  const filtered = employees.filter(emp => {
+    const matchSearch = emp.name.toLowerCase().includes(search) || emp.id.toString().includes(search);
+    const matchRole = !role || emp.role === role;
+    const matchStatus = !status || emp.status === status;
+    return matchSearch && matchRole && matchStatus;
+  });
+
+  renderTable(filtered);
+}
+
+searchInput.addEventListener("input", applyFilters);
+roleSelect.addEventListener("change", applyFilters);
+statusFilter.addEventListener("change", applyFilters);
+
+empTab.addEventListener("click", () => {
+  empTab.classList.add("active");
+  roleTab.classList.remove("active");
+  employeeTable.style.display = "table";
+  roleTableContainer.style.display = "none";
+  addBtn.textContent = "Add Employee";
+  statusFilter.classList.remove("hide");
+});
+
+roleTab.addEventListener("click", () => {
+  empTab.classList.remove("active");
+  roleTab.classList.add("active");
+  employeeTable.style.display = "none";
+  roleTableContainer.style.display = "block";
+  addBtn.textContent = "Add New Role";
+  statusFilter.classList.add("hide");
+});
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  searchInput.value = '';
+  roleSelect.value = '';
+  statusFilter.value = '';
+  applyFilters();
+});
+
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const tableData = [["S.No", "Emp ID", "Name", "Mobile Number", "Email Address", "Joining Date", "Role", "Status"]];
+  const rows = tbody.querySelectorAll("tr");
+  rows.forEach(row => {
+    const cells = row.querySelectorAll("td");
+    const rowData = [
+      cells[1]?.textContent.trim(),
+      cells[2]?.textContent.trim(),
+      cells[3]?.textContent.trim(),
+      cells[4]?.textContent.trim(),
+      cells[5]?.textContent.trim(),
+      cells[6]?.textContent.trim(),
+      cells[7]?.textContent.trim(),
+      cells[8]?.textContent.trim().replace(/^\s*\S+\s*/, '')
+    ];
+    tableData.push(rowData);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(tableData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Employees");
+  XLSX.writeFile(wb, "Employee_List.xlsx");
+});
+
+renderTable(employees);
+
+  </script>
+</body>
+</html>
